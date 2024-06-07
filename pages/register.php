@@ -1,5 +1,5 @@
 <?php 
-    $title = "Login Page";
+    $title = "Register Page";
     $custom = "
     <style>
       
@@ -59,36 +59,57 @@
 
     ";
     require_once("../layout/head.php");
+    require_once("../db.php");
+
+    if(isset($_POST['submit'])){
+        $username = $_POST['username'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $role = 3;
+        
+        if (empty($username) || empty($email) || empty($password)) {
+            echo "<script>alert('Data Tidak Boleh Kosong')</script>";
+        } else {
+            $email = $db->real_escape_string($email);
+            $data = $db->query("SELECT * FROM users WHERE email = '$email'");
+            if($data->num_rows > 0){
+              echo "<script>alert('Email Sudah Terdaftar')</script>";
+            } else {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $username = $db->real_escape_string($username);
+
+                $sql = "INSERT INTO users (id, username, email, password, role_id) VALUES (0, '$username', '$email', '$hashed_password', $role)";
+                if ($db->query($sql) === TRUE) {
+                    echo "<script>alert('Registrasi berhasil!'); window.location.href = './login.php';</script>";
+                } else {
+                    echo "<script>alert('Registrasi gagal: " . $db->error . "');</script>";
+                }
+            }
+        }
+    }
 ?>
 
 <main class="form-signin w-100 m-auto">
-    <form>
+    <form method="POST" action="">
         <img class="mb-4" src="https://placehold.co/123/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="" width="72" height="57">
         <h1 class="h3 mb-3 fw-normal">Sign Up</h1>
         <div class="form-floating mb-1">
-            <input type="text" class="form-control" id="floatingInput" placeholder="John Doe">
+            <input type="text" name="username" class="form-control" id="floatingInput" placeholder="John Doe" required>
             <label for="floatingInput">Nama Lengkap</label>
         </div>
         <div class="form-floating mb-1">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
+            <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="name@example.com" required>
+            <label for="floatingEmail">Email address</label>
         </div>
         <div class="form-floating mb-1">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
             <label for="floatingPassword">Password</label>
         </div>
-<!-- 
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
-        </div> -->
 
         <p>Sudah Punya akun? <a href="./login.php">Login Disini!!</a></p>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
+        <input class="w-100 btn btn-lg btn-primary" name="submit" type="submit" value="Create">
+        <p class="mt-5 mb-3 text-muted">&copy; Pantrian 2024</p>
     </form>
 </main>
-
 
 <?php require_once("../layout/foot.php"); ?>
