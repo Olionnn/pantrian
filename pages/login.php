@@ -1,91 +1,92 @@
 <?php 
     $title = "Login Page";
-    $custom = "
-    <style>
-      
-    .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      user-select: none;
+    $custom = "";
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    session_start(); 
+    require_once("../layout/header.php");
+    require_once("../db.php");
+
+
+    if(isset($_POST['submit'])) {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        if (empty($username) || empty($password)) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Data Tidak Boleh Kosong'];
+        } else {
+            $username = $db->real_escape_string($username);
+            $data = $db->query("SELECT username, password , role_id FROM users WHERE username = '$username'");
+            if ($data->num_rows > 0) {
+                $row = $data->fetch_assoc();
+                if (password_verify($password, $row['password'])) {
+                    $_SESSION['user'] = ['username' => $row['username'], 'role_id' => $row['role_id']];
+                    header('Location: ./dashboard.php');
+                    exit();
+                } else {
+                    $_SESSION['message'] = ['type' => 'danger', 'text' => 'Password Salah'];
+                }
+            } else {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => 'Username Tidak Ditemukan'];
+            }
+        }
     }
 
-    @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-      }
-    }
 
-    .b-example-divider {
-      height: 3rem;
-      background-color: rgba(0, 0, 0, .1);
-      border: solid rgba(0, 0, 0, .15);
-      border-width: 1px 0;
-      box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-    }
 
-    .b-example-vr {
-      flex-shrink: 0;
-      width: 1.5rem;
-      height: 100vh;
-    }
-
-    .bi {
-      vertical-align: -.125em;
-      fill: currentColor;
-    }
-
-    .nav-scroller {
-      position: relative;
-      z-index: 2;
-      height: 2.75rem;
-      overflow-y: hidden;
-    }
-
-    .nav-scroller .nav {
-      display: flex;
-      flex-wrap: nowrap;
-      padding-bottom: 1rem;
-      margin-top: -1px;
-      overflow-x: auto;
-      text-align: center;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    </style>
-    <link rel='stylesheet' href='../assets/css/signin.css'>
-
-    ";
-    require_once("../layout/head.php");
 ?>
+    <div class="container">
+        <div class="row justify-content-center">
 
-<main class="form-signin w-100 m-auto">
-    <form>
-        <img class="mb-4" src="https://placehold.co/123/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="" width="72" height="57">
-        <h1 class="h3 mb-3 fw-normal">sign in</h1>
+            <div class="col-xl-10 col-lg-12 col-md-9">
 
-        <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <img class="col-lg-6 d-none d-lg-block bg-login-image" src="https://placehold.co/420/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="">
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                    </div>
+                                    <form class="user" method="POST">
+                                    <?php
+                                    if (isset($_SESSION['message'])) {
+                                        $message = $_SESSION['message'];
+                                        echo ("<div class='alert alert-{$message['type']}' role='alert'>
+                                                {$message['text']}
+                                            </div>");
+                                        unset($_SESSION['message']); 
+                                    }
+                                    ?>
+                                        <div class="form-group">
+                                            <input type="text" name="username" class="form-control form-control-user"
+                                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                                placeholder="Masukan Username...">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="form-control form-control-user"
+                                                id="exampleInputPassword" placeholder="Masukan Password">
+                                        </div>
+                                        <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Login">
+                                    </form>
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="./forgot-password.html">Forgot Password?</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" href="./register.php">Create an Account!</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
-        <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
-        </div>
-<!-- 
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
-        </div> -->
 
-        <p>Belom Punya akun? <a href="./register.php">Buat Akun Disini!!</a></p>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
-    </form>
-</main>
+    </div>
 
-
-<?php require_once("../layout/foot.php"); ?>
+    <?php require_once("../layout/footer.php"); ?>

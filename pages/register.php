@@ -1,115 +1,109 @@
-<?php 
-    $title = "Register Page";
-    $custom = "
-    <style>
-      
-    .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      user-select: none;
-    }
+<?php
+$title = "Register Page";
+$custom = "";
 
-    @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-      }
-    }
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-    .b-example-divider {
-      height: 3rem;
-      background-color: rgba(0, 0, 0, .1);
-      border: solid rgba(0, 0, 0, .15);
-      border-width: 1px 0;
-      box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-    }
+session_start(); 
 
-    .b-example-vr {
-      flex-shrink: 0;
-      width: 1.5rem;
-      height: 100vh;
-    }
+require_once("../layout/header.php");
+require_once("../db.php");
 
-    .bi {
-      vertical-align: -.125em;
-      fill: currentColor;
-    }
+if (isset($_POST['submit'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $cpassword = $_POST['cpassword'];
+    $role = 3;
 
-    .nav-scroller {
-      position: relative;
-      z-index: 2;
-      height: 2.75rem;
-      overflow-y: hidden;
-    }
-
-    .nav-scroller .nav {
-      display: flex;
-      flex-wrap: nowrap;
-      padding-bottom: 1rem;
-      margin-top: -1px;
-      overflow-x: auto;
-      text-align: center;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    </style>
-    <link rel='stylesheet' href='../assets/css/signin.css'>
-
-    ";
-    require_once("../layout/head.php");
-    require_once("../db.php");
-
-    if(isset($_POST['submit'])){
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $role = 3;
-        
-        if (empty($username) || empty($email) || empty($password)) {
-            echo "<script>alert('Data Tidak Boleh Kosong')</script>";
+    if (empty($username) || empty($email) || empty($password)) {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Data Tidak Boleh Kosong'];
+    } else {
+        $remail = $db->real_escape_string($email);
+        $data = $db->query("SELECT username FROM users WHERE email = '$remail'");
+        foreach ($data as $row) {
+            echo($row['username']);
+        }
+        if ($data->num_rows > 0) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Email Sudah Terdaftar'];
         } else {
-            $email = $db->real_escape_string($email);
-            $data = $db->query("SELECT * FROM users WHERE email = '$email'");
-            if($data->num_rows > 0){
-              echo "<script>alert('Email Sudah Terdaftar')</script>";
-            } else {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $username = $db->real_escape_string($username);
 
-                $sql = "INSERT INTO users (id, username, email, password, role_id) VALUES (0, '$username', '$email', '$hashed_password', $role)";
-                if ($db->query($sql) === TRUE) {
-                    echo "<script>alert('Registrasi berhasil!'); window.location.href = './login.php';</script>";
-                } else {
-                    echo "<script>alert('Registrasi gagal: " . $db->error . "');</script>";
-                }
+            if ($password != $cpassword) {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => 'Password tidak sama'];
+                header('Location: ./register.php');
+                exit();
+            }
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $username = $db->real_escape_string($username);
+
+            $sql = "INSERT INTO users (id, username, email, password, role_id) VALUES (0, '$username', '$remail', '$hashed_password', $role)";
+            if ($db->query($sql) === TRUE) {
+                $_SESSION['message'] = ['type' => 'success', 'text' => 'Registrasi berhasil!'];
+                header('Location: ./login.php');
+                exit(); 
+            } else {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => 'Registrasi gagal: ' . $db->error];
             }
         }
     }
+}
 ?>
 
-<main class="form-signin w-100 m-auto">
-    <form method="POST" action="">
-        <img class="mb-4" src="https://placehold.co/123/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="" width="72" height="57">
-        <h1 class="h3 mb-3 fw-normal">Sign Up</h1>
-        <div class="form-floating mb-1">
-            <input type="text" name="username" class="form-control" id="floatingInput" placeholder="John Doe" required>
-            <label for="floatingInput">Nama Lengkap</label>
-        </div>
-        <div class="form-floating mb-1">
-            <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="name@example.com" required>
-            <label for="floatingEmail">Email address</label>
-        </div>
-        <div class="form-floating mb-1">
-            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-            <label for="floatingPassword">Password</label>
-        </div>
 
-        <p>Sudah Punya akun? <a href="./login.php">Login Disini!!</a></p>
-        <input class="w-100 btn btn-lg btn-primary" name="submit" type="submit" value="Create">
-        <p class="mt-5 mb-3 text-muted">&copy; Pantrian 2024</p>
-    </form>
-</main>
+<div class="container">
+    <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+            <div class="row">
+                <img class="col-lg-5 d-none d-lg-block bg-register-image" src="https://placehold.co/520/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="">
+                <div class="col-lg-7">
+                    <div class="p-5">
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                        </div>
+                        <form class="user" method="POST">
+                            <?php
+                            if (isset($_SESSION['message'])) {
+                                $message = $_SESSION['message'];
+                                echo ("<div class='alert alert-{$message['type']}' role='alert'>
+                                        {$message['text']}
+                                    </div>");
+                                unset($_SESSION['message']); 
+                            }
+                            ?>
 
-<?php require_once("../layout/foot.php"); ?>
+                            <div class="form-group">
+                                <input type="text" name="username" class="form-control form-control-user" id="exampleFirstName"
+                                    placeholder="Username">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" class="form-control form-control-user" id="exampleInputEmail"
+                                    placeholder="Email Address">
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <input type="password" name="password" class="form-control form-control-user"
+                                        id="exampleInputPassword" placeholder="Password">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="password" name="cpassword" class="form-control form-control-user"
+                                        id="exampleRepeatPassword" placeholder="Repeat Password">
+                                </div>
+                            </div>
+                            <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Register Account">
+                        </form>
+                        <hr>
+                        <div class="text-center">
+                            <a class="small" href="forgot-password.html">Forgot Password?</a>
+                        </div>
+                        <div class="text-center">
+                            <a class="small" href="./login.php">Already have an account? Login!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require_once("../layout/footer.php"); ?>
