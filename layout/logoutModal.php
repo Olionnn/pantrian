@@ -1,13 +1,3 @@
-<?php
-    if (isset($_POST['logout'])) {
-        session_unset();
-        session_destroy();
-        session_start();
-        $_SESSION['message'] = ['type' => 'success', 'text' => 'Anda berhasil logout'];
-        header('Location: login.php');
-        exit();
-    }
-?>
 
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">

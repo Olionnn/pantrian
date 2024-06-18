@@ -57,7 +57,7 @@
 
     <hr class="sidebar-divider">
 
-    <div class="sidebar-heading">
+    <!-- <div class="sidebar-heading">
         Report
     </div>
 
@@ -95,7 +95,7 @@
         </div>
     </li>
 
-    <hr class="sidebar-divider">
+    <hr class="sidebar-divider"> -->
 
     <div class="sidebar-heading">
         Administator

@@ -16,7 +16,7 @@
     }
     
 
-    // checkAccessPage($db, 3, "./login.php");
+    checkAccessPage($db, 3, "./noacc.php");
 
 
     function getUsers() {
@@ -357,7 +357,7 @@
     </div>
 
     <?php 
-        require_once("../layout/logoutModal.php"); 
+        require("../layout/logoutModal.php"); 
         $customsc = "
         <script>
             $('#editModal').on('show.bs.modal', function (event) {

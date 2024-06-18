@@ -6,6 +6,7 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
+    require_once("./access.php");
 
 
     if (!isset($_SESSION['user'])) {
@@ -14,6 +15,7 @@
         exit();
     }
 
+    checkAccessPage($db, 14, "./noacc.php");
 
     if ($_SESSION['user']['role_id'] != 1) {
         $_SESSION['message'] = ['type' => 'danger', 'text' => 'Anda tidak memiliki akses'];
@@ -100,6 +102,53 @@
         return null;
     }
 
+    function btnAddPermision() {
+        global $db;
+        if (checkAccessPage($db , 15 , '')) {
+            return '
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Add Sales
+                </button>
+            ';
+        } else {
+            return "";
+        }
+    }
+
+
+    function btnEditPermision($sale) {
+        global $db;
+        if (checkAccessPage($db , 16 , '')) {
+            return "
+            <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
+                data-id='{$sale['id']}' 
+                data-name='{$sale['name']}'
+                data-alamat='{$sale['alamat']}' 
+                data-montor_id='{$sale['montor_id']}' 
+                data-nomerhp='{$sale['nomerhp']}' 
+                data-payment='{$sale['payment']}'
+                data-status='{$sale['status']}'
+                >
+                Edit
+            </button>
+            ";
+        }
+    }
+
+    function btnDeletePermision($sale) {
+        global $db;
+        if (checkAccessPage($db , 17 , '')) {
+            return "
+            <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
+                data-id='{$sale['id']}' 
+                data-name='{$sale['name']}'>
+                Delete
+            </button>
+            ";
+        }
+    }
+
 ?>
 
     <div id="wrapper">
@@ -127,10 +176,7 @@
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="m-0 my-auto font-weight-bold text-primary ">Sales Data Tables</h6>
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Sales
-                            </button>
+                            <?= btnAddPermision() ?>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -170,22 +216,8 @@
                                                 echo "<td>{$sale['nomerhp']}</td>";
                                                 echo "<td>{$sale['montor_name']}</td>";
                                                 echo "<td>
-                                                        <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
-                                                            data-id='{$sale['id']}' 
-                                                            data-name='{$sale['name']}'
-                                                            data-alamat='{$sale['alamat']}' 
-                                                            data-montor_id='{$sale['montor_id']}' 
-                                                            data-nomerhp='{$sale['nomerhp']}' 
-                                                            data-payment='{$sale['payment']}'
-                                                            data-status='{$sale['status']}'
-                                                            >
-                                                            Edit
-                                                        </button>
-                                                        <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
-                                                        data-id='{$sale['id']}' 
-                                                        data-name='{$sale['name']}'>
-                                                        Delete
-                                                        </button>
+                                                        ".btnEditPermision($sale)."
+                                                        ".btnDeletePermision($sale)."
                                                         <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#detailModal' 
                                                         data-id='{$sale['id']}'
                                                         data-name='{$sale['montor_name']}'
@@ -439,7 +471,7 @@
     
 
     <?php
-        require_once("../layout/logoutModal.php"); 
+        require("../layout/logoutModal.php"); 
         $customsc = "
         <script>
             $('#editModal').on('show.bs.modal', function (event) {

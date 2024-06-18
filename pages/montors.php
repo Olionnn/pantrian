@@ -6,6 +6,7 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
+    
 
 
     if (!isset($_SESSION['user'])) {
@@ -362,7 +363,7 @@
 
 
     <?php
-        require_once("../layout/logoutModal.php"); 
+        require("../layout/logoutModal.php"); 
         $customsc = "
         <script>
             $('#editModal').on('show.bs.modal', function (event) {

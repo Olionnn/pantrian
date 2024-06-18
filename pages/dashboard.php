@@ -4,8 +4,11 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     session_start(); 
+
+
     require_once("../layout/header.php");
     require_once("../db.php");
+    require_once("./access.php");
 
 
     if (!isset($_SESSION['user'])) {
@@ -13,9 +16,103 @@
         header('Location: ./login.php');
         exit();
     }
- 
+
+    checkAccessPage($db, 9, "./noacc.php");
+    
+    function getServices() {
+        global $db;
+        $sql = "SELECT * FROM services WHERE status = 0 AND service_type = 1 ORDER BY id DESC";
+        $result = $db->query($sql);
+        $services = [];
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $services[] = $row;
+            }
+        }
+        return $services;
+    }
 
 
+    function getQueueTotal() {
+        global $db;
+        $sql = "SELECT COUNT(*) as total FROM services WHERE status = 0 AND service_type = 2";
+        $result = $db->query($sql);
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
+    }
+    function getServicesTotal() {
+        global $db;
+        $sql = "SELECT COUNT(*) as total FROM services WHERE status = 1 AND service_type = 1";
+        $result = $db->query($sql);
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
+    }
+
+    function getTotalServices() {
+        global $db;
+        $sql = "SELECT SUM(total) as total FROM services WHERE status = 1 AND service_type = 1";
+        $result = $db->query($sql);
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
+    }
+
+    function getTotalDoneSales() {
+        global $db;
+        $sql = "SELECT COUNT(*) as total FROM sales WHERE status = 1";
+        $result = $db->query($sql);
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
+    }
+
+
+
+    $current_date = new DateTime();
+
+    $previous_monday = clone $current_date;
+    $previous_monday->modify('last monday');
+
+    $following_sunday = clone $previous_monday;
+    $following_sunday->modify('+6 days');
+
+    $start_date = $previous_monday->format('Y-m-d');
+    $end_date = $following_sunday->format('Y-m-d');
+
+    $date_range = [];
+
+    $current_day = clone $previous_monday;
+    while ($current_day <= $following_sunday) {
+        $date_range[] = $current_day->format('Y-m-d');
+        $current_day->modify('+1 day');
+    }
+
+    $sql = "SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date, IFNULL(SUM(total), 0) AS total_sum
+            FROM services
+            WHERE status = 1 AND service_type = 1
+                AND created_at BETWEEN '$start_date' AND '$end_date'
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+            ORDER BY MAX(created_at) DESC";
+
+    $result = $db->query($sql);
+
+    $data = array_fill_keys($date_range, 0);
+
+    while ($row = $result->fetch_assoc()) {
+        $data[$row['date']] = $row['total_sum'];
+    }
+
+    
 ?>
 
 
@@ -41,40 +138,21 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
                     </div>
 
                     <!-- Content Row -->
                     <div class="row">
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Earnings (Monthly)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-success shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Earnings (Annual)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                                Earnings Service</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp. <?= getTotalServices(); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -86,6 +164,26 @@
 
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Total Done Sales</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= getTotalDoneSales(); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <!-- <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -111,8 +209,23 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Total Service</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= getServicesTotal(); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
                         <!-- Pending Requests Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-warning shadow h-100 py-2">
@@ -121,7 +234,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Pending Requests</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= getQueueTotal(); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -161,16 +274,51 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+                                        <canvas id="myAreaChart2"></canvas>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5">
+                         <div class="col-xl-4 col-lg-5">
                             <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">List Service Queue</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered"  width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Nama</th>
+                                                <th>Montor</th>
+                                                <th>total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                                $services = getServices();
+                                                foreach ($services as $service) {
+                                                    echo '
+
+                                                            <tr>
+                                                                <td>' . $service["codeq"] . '</td>
+                                                                <td>' . $service["name"] . '</td>
+                                                                <td>' . $service["montor"] . '</td>
+                                                                <td>' . $service["total"] . '</td>
+                                                            </tr>
+
+                                                    ';
+                                                }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pie Chart -->
+                        <!-- <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
@@ -189,7 +337,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-pie pt-4 pb-2">
                                         <canvas id="myPieChart"></canvas>
@@ -207,16 +354,14 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Content Row -->
-                    <div class="row">
+                    <!-- <div class="row">
 
-                        <!-- Content Column -->
                         <div class="col-lg-6 mb-4">
 
-                            <!-- Project Card Example -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
@@ -255,7 +400,6 @@
                                 </div>
                             </div>
 
-                            <!-- Color System -->
                             <div class="row">
                                 <div class="col-lg-6 mb-4">
                                     <div class="card bg-primary text-white shadow">
@@ -327,7 +471,6 @@
 
                         <div class="col-lg-6 mb-4">
 
-                            <!-- Illustrations -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
@@ -346,22 +489,10 @@
                                 </div>
                             </div>
 
-                            <!-- Approach -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                                        custom components and custom utility classes.</p>
-                                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                                        Bootstrap framework, especially the utility classes.</p>
-                                </div>
-                            </div>
+                           
 
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
                 <!-- /.container-fluid -->
@@ -382,6 +513,35 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <?php require_once("../layout/logoutModal.php"); ?>
+    <?php require("../layout/logoutModal.php"); ?>
 
-<?php require_once("../layout/footer.php"); ?>
+<?php 
+    $customsc = "<script>
+    var ctx = document.getElementById('myAreaChart2').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ". json_encode(array_keys($data)).",
+            datasets: [{
+                label: 'Total',
+                data: ". json_encode(array_values($data))." ,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 1, 
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>";
+    require_once("../layout/footer.php");
+
+?>

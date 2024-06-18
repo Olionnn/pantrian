@@ -1,5 +1,5 @@
 <?php 
-    $title = "Services Page";
+    $title = "Service Jalan Page";
     $custom = "";
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
@@ -18,7 +18,7 @@
 
     function getServices() {
         global $db;
-        $sql = "SELECT * FROM services WHERE status = 1 AND service_type = 1 ORDER BY id DESC";
+        $sql = "SELECT * FROM services WHERE status != 1 and status != 2 AND service_type = 2 ORDER BY id DESC";
         $result = $db->query($sql);
         $services = [];
         if ($result->num_rows > 0) {
@@ -29,6 +29,61 @@
         return $services;
     }
 
+
+    if (isset($_POST['addqueue'])) {
+        $service_type = $_POST['service_type'];
+        $status = $_POST['status'];
+        $codeq = "Q" . date('His');
+        $sql = "INSERT INTO services (codeq, service_type, status) VALUES ('$codeq', $service_type, $status)";
+        if ($db->query($sql) === TRUE) {
+            $_SESSION['message'] = ['type' => 'success', 'text' => 'Service berhasil ditambahkan'];
+        } else {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Service gagal ditambahkan'];
+        }
+        header('Location: ./wservice.php');
+        exit();
+    }
+
+    if (isset($_POST['setqueue'])) {
+        $id = $_POST['id'];
+        $service_type = $_POST['service_type'];
+        $status = $_POST['status'];
+        $user_id = $_POST['user_id'];
+        $sql = "UPDATE services SET status = $status, user_id = $user_id WHERE id = $id";
+        if ($db->query($sql) === TRUE) {
+            $_SESSION['message'] = ['type' => 'success', 'text' => 'Service berhasil diambil'];
+        } else {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Service gagal diambil'];
+        }
+        header('Location: ./wservice.php');
+        exit();
+    }
+
+    function getBtnStatus($id, $status, $user_id) {
+        if ($status == 0) {
+            return '
+            <form action="" method="post">
+                <input type="hidden" name="id" value="'.$id.'">
+                <input type="hidden" name="service_type" value="2">
+                <input type="hidden" name="status" value="555">
+                <input type="hidden" name="user_id" value="' . $_SESSION['user']['id'] . '">
+                <button class="btn btn-primary" name="setqueue" type="submit">Ambil</button>
+            </form>
+            ';
+        } else if ($status == 555 && $user_id != $_SESSION['user']['id']) {
+            return '<button class="btn btn-primary">Sudah Diambil</button>';
+        } else {
+            return '
+            <Form action="" method="post">
+                <input type="hidden" name="id" value="'.$id.'">
+                <input type="hidden" name="service_type" value="2">
+                <input type="hidden" name="status" value="1">
+                <input type="hidden" name="user_id" value="' . $_SESSION['user']['id'] . '">
+                <button class="btn btn-primary" name="setqueue" type="submit">Selesaikan</button>
+            </Form>
+            ';
+        }
+    }
 ?>
 
     <div id="wrapper">
@@ -55,11 +110,15 @@
                     ?>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
-                            <h6 class="m-0 my-auto font-weight-bold text-primary ">Service Queue</h6>
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Service
-                            </button>
+                            <h6 class="m-0 my-auto font-weight-bold text-primary ">Service Jalan Queue</h6>
+                            <form action="" method="post">
+                                <input type="hidden" name="service_type" value="2">
+                                <input type="hidden" name="status" value="0">
+                                <button class="btn btn-primary btn-sm" name="addqueue" type="submit">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Add Service Jalan
+                                </button>
+                            </form>
                         </div>
                         <div class="card-body">
 
@@ -76,16 +135,7 @@
                                                     <div class="card-body">
                                                         <h5 class="card-title text-center">' . $service["codeq"] . '</h5>
                                                         <div class="text-center">
-                                                            <button class="btn btn-primary" id="editService" 
-                                                            data-id="' . $service["id"] . '
-                                                            data-codeq="' . $service["codeq"] . '
-                                                            data-service_type="' . $service["service_type"] . '
-                                                            data-status="' . $service["status"] . '
-                                                            
-                                                            
-                                                            >Edit</button>
-                                                            <button class="btn btn-primary">Detail</button>
-                                                            <button class="btn btn-primary">Finish</button>
+                                                            ' . getBtnStatus($service["id"],$service["status"], $service["user_id"]) . '
                                                         </div>
                                                     </div>
                                                 </div>
@@ -121,7 +171,7 @@
     
 
     <?php
-        require_once("../layout/logoutModal.php"); 
+        require("../layout/logoutModal.php"); 
         $customsc = "
         
         ";

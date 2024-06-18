@@ -93,12 +93,12 @@ if (isset($_POST['submit'])) {
                             <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Register Account">
                         </form>
                         <hr>
-                        <div class="text-center">
+                        <!-- <div class="text-center">
                             <a class="small" href="forgot-password.html">Forgot Password?</a>
-                        </div>
-                        <div class="text-center">
+                        </div> -->
+                        <!-- <div class="text-center">
                             <a class="small" href="./login.php">Already have an account? Login!</a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -106,4 +106,7 @@ if (isset($_POST['submit'])) {
     </div>
 </div>
 
-<?php require_once("../layout/footer.php"); ?>
+<?php 
+    $customsc = "";
+    require_once("../layout/footer.php");
+?>

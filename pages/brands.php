@@ -6,6 +6,7 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
+    require_once("./access.php");
 
 
     if (!isset($_SESSION['user'])) {
@@ -14,6 +15,7 @@
         exit();
     }
 
+    checkAccessPage($db, 10, "./noacc.php");
 
     function getBrands() {
         global $db;
@@ -71,6 +73,43 @@
 
 
 
+    function btnAddPermision() {
+        global $db;
+        if (checkAccessPage($db , 12 , '')) {
+            return '
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Add Brands
+                </button>
+            ';
+        }
+    }
+
+
+    function btnEditPermision($brand) {
+        global $db;
+        if (checkAccessPage($db , 11 , '')) {
+            return "
+                <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' data-id='".$brand['id']."' data-brand='".$brand['brand_name']."'  data-deskripsi='".$brand['deskripsi']."' >
+                    <i class='fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400'></i>
+                    Edit
+                </button>
+            ";
+        }
+    }
+
+    function btnDeletePermision($brand) {
+        global $db;
+        if (checkAccessPage($db , 13 , '')) {
+            return "
+                <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' data-id='".$brand['id']."' data-brand='".$brand['brand_name']."'>
+                    <i class='fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400'></i>
+                    Delete
+                </button>
+            ";
+        }
+    }
+
 ?>
 
     <div id="wrapper">
@@ -98,10 +137,7 @@
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="m-0 my-auto font-weight-bold text-primary ">Brands Data Tables</h6>
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Brands
-                            </button>
+                            <?= btnAddPermision() ?>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -135,14 +171,8 @@
                                                 echo "<td>".$brand['brand_name']."</td>";
                                                 echo "<td>".$brand['deskripsi']."</td>";
                                                 echo "<td>
-                                                    <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' data-id='".$brand['id']."' data-brand='".$brand['brand_name']."'  data-deskripsi='".$brand['deskripsi']."' >
-                                                        <i class='fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400'></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' data-id='".$brand['id']."' data-brand='".$brand['brand_name']."'>
-                                                        <i class='fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400'></i>
-                                                        Delete
-                                                    </button>
+                                                        ".btnEditPermision($brand)."
+                                                        ".btnDeletePermision($brand)."
                                                 </td>";
                                                 echo "</tr>";
                                                 $no++;
@@ -261,7 +291,7 @@
 
 
     <?php
-        require_once("../layout/logoutModal.php"); 
+        require("../layout/logoutModal.php"); 
         $customsc = "
         <script>
             $('#editModal').on('show.bs.modal', function (event) {

@@ -16,11 +16,11 @@
             $_SESSION['message'] = ['type' => 'danger', 'text' => 'Data Tidak Boleh Kosong'];
         } else {
             $username = $db->real_escape_string($username);
-            $data = $db->query("SELECT username, password , role_id FROM users WHERE username = '$username'");
+            $data = $db->query("SELECT id, username, password , role_id FROM users WHERE username = '$username'");
             if ($data->num_rows > 0) {
                 $row = $data->fetch_assoc();
                 if (password_verify($password, $row['password'])) {
-                    $_SESSION['user'] = ['username' => $row['username'], 'role_id' => $row['role_id']];
+                    $_SESSION['user'] = [ 'id'=> $row['id'], 'username' => $row['username'], 'role_id' => $row['role_id']];
                     header('Location: ./dashboard.php');
                     exit();
                 } else {
@@ -71,12 +71,12 @@
                                         <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Login">
                                     </form>
                                     <hr>
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         <a class="small" href="./forgot-password.html">Forgot Password?</a>
-                                    </div>
-                                    <div class="text-center">
+                                    </div> -->
+                                    <!-- <div class="text-center">
                                         <a class="small" href="./register.php">Create an Account!</a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -89,4 +89,9 @@
 
     </div>
 
-    <?php require_once("../layout/footer.php"); ?>
+    <?php
+     $customsc = "";
+     require("../layout/footer.php");
+
+
+     ?>
