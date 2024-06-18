@@ -24,7 +24,8 @@
     function getSales() {
         global $db;
         // name	montor_id	user_id	payment	nomerhp	alamat	status
-        $sql = "SELECT *, montors.mtr_name as montor_name FROM sales JOIN montors ON sales.montor_id = montors.id";
+        $sql = "SELECT sales.*, montors.mtr_name as montor_name FROM sales JOIN montors ON sales.montor_id = montors.id";
+        // $sql = "SELECT sales.*, montors.mtr_name as montor_name FROM sales JOIN montors ON sales.montor_id = montors.id";
         $result = mysqli_query($db, $sql);
         $sales = [];
         if (mysqli_num_rows($result) > 0) {
@@ -187,7 +188,7 @@
                                                         </button>
                                                         <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#detailModal' 
                                                         data-id='{$sale['id']}'
-                                                        data-name='{$sale['mtr_name']}'
+                                                        data-name='{$sale['montor_name']}'
                                                         data-alamat='{$sale['alamat']}'
                                                         data-nomerhp='{$sale['nomerhp']}'
                                                         data-montor_id='{$sale['montor_id']}'

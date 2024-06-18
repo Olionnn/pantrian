@@ -17,7 +17,8 @@
 
     function getMontor() {
         global $db;
-        $query = "SELECT *, brands.id as brand_id, brands.deskripsi as brand_deskripsi, montors.deskripsi as mtr_desc FROM montors JOIN brands ON montors.brand_id = brands.id";
+        $query = "SELECT montors.*, brands.deskripsi as brand_deskripsi, brands.brand_name, montors.deskripsi  as mtr_desc FROM montors JOIN brands ON montors.brand_id = brands.id";
+        // $query = "SELECT montors.*, brands.id as brandid, brands.deskripsi as brand_deskripsi, brands.brand_name, montors.deskripsi  as mtr_desc,  FROM montors JOIN brands ON montors.brand_id = brands.id";
         $result = mysqli_query($db, $query);
         $montors = [];
         while ($row = mysqli_fetch_assoc($result)) {
@@ -44,7 +45,7 @@
             exit();
         }
     
-        $target_file = $target_dir . basename($img);
+        $target_file = $target_dir ."\\". basename($img);
         if (move_uploaded_file($img_tmp, $target_file)) {
             $query = "INSERT INTO montors (mtr_name, brand_id, img, harga, deskripsi) VALUES ('$mtr_name', '$brand_id', '$img', '$harga', '$deskripsi')";
             $result = mysqli_query($db, $query);
@@ -71,7 +72,7 @@
     
         $img = $_FILES['img']['name'];
         $img_tmp = $_FILES['img']['tmp_name'];
-        $target_dir = realpath(dirname(__FILE__.  "../assets/images/montor"));
+        $target_dir = realpath("../assets/images/montor/");
 
     
         if (empty($mtr_name) || empty($brand_id) || empty($harga) || empty($deskripsi)) {
@@ -81,7 +82,7 @@
         }
     
         if (!empty($img)) {
-            $target_file = $target_dir . basename($img);
+            $target_file = $target_dir ."\\". basename($img);
             if (move_uploaded_file($img_tmp, $target_file)) {
                 $query = "UPDATE montors SET mtr_name = '$mtr_name', brand_id = '$brand_id', img = '$img', harga = '$harga', deskripsi = '$deskripsi' WHERE id = $id";
             } else {
@@ -103,6 +104,19 @@
         exit();
     }
     
+    if (isset($_POST['dmontor'])) {
+        $id = $_POST['id'];
+        echo $id;
+        $query = "DELETE FROM montors WHERE montors.id = $id";
+        $result = mysqli_query($db, $query);
+        if ($result) {
+            $_SESSION['message'] = ['type' => 'success', 'text' => 'Montor berhasil dihapus'];
+        } else {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Montor gagal dihapus'];
+        }
+        header('Location: ./montors.php');
+        exit();
+    }
 
 ?>
 
@@ -170,22 +184,21 @@
                                                     <td>{$no}</td>
                                                     <td>{$montor['mtr_name']}</td>
                                                     <td>{$montor['brand_name']}</td>
-                                                    <td><img src='{$montor['img']}' alt='{$montor['mtr_name']}' width='100'></td>
+                                                    <td><img src='../assets/images/montor/{$montor['img']}' alt='{$montor['mtr_name']}' width='100'></td>
                                                     <td>{$montor['harga']}</td>
                                                     <td>
                                                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
                                                             data-id='{$montor['id']}' 
                                                             data-img='{$montor['img']}' 
-                                                            data-brandid='{$montor['id']}' 
+                                                            data-brandid='{$montor['brand_id']}' 
                                                             data-brand='{$montor['mtr_name']}' 
                                                             data-harga='{$montor['harga']}'
-
                                                             data-deskripsi='{$montor['mtr_desc']}'>
                                                             Edit
                                                         </button>
                                                         <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
-                                                        data-id='{$montor['id']}' 
-                                                        data-montor='{$montor['mtr_name']}'>
+                                                            data-id='{$montor['id']}' 
+                                                            data-montor='{$montor['mtr_name']}'>
                                                         Delete
                                                         </button>
                                                     </td>
@@ -334,7 +347,7 @@
                 </div>
                 <form action="" method="post">
                     <div class="modal-body">
-                        Are you sure you want to delete the Montor: <span id="delete-montor-name"></span>?
+                        Are you sure you want to delete the Montor:  <span id="delete-montor-name"></span>?
                         <input type="hidden" name="id" id="delete-montor-id">
                     </div>
                     <div class="modal-footer">

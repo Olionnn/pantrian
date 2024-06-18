@@ -6,6 +6,7 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
+    require_once("access.php");
 
 
     if (!isset($_SESSION['user'])) {
@@ -13,6 +14,9 @@
         header('Location: ./login.php');
         exit();
     }
+    
+
+    // checkAccessPage($db, 3, "./login.php");
 
 
     function getUsers() {
