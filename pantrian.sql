@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Jun 18, 2024 at 04:34 AM
--- Server version: 8.0.30
--- PHP Version: 8.1.10
+-- Host: localhost
+-- Generation Time: Jun 18, 2024 at 05:08 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,9 +28,9 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `brands` (
-  `id` int NOT NULL,
-  `brand_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_general_ci
+  `id` int(11) NOT NULL,
+  `brand_name` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -48,12 +48,12 @@ INSERT INTO `brands` (`id`, `brand_name`, `deskripsi`) VALUES
 --
 
 CREATE TABLE `montors` (
-  `id` int NOT NULL,
-  `mtr_name` text COLLATE utf8mb4_general_ci NOT NULL,
-  `brand_id` int NOT NULL,
-  `img` text COLLATE utf8mb4_general_ci NOT NULL,
-  `harga` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_general_ci NOT NULL
+  `id` int(11) NOT NULL,
+  `mtr_name` text NOT NULL,
+  `brand_id` int(11) NOT NULL,
+  `img` text NOT NULL,
+  `harga` varchar(255) NOT NULL,
+  `deskripsi` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -70,9 +70,9 @@ INSERT INTO `montors` (`id`, `mtr_name`, `brand_id`, `img`, `harga`, `deskripsi`
 --
 
 CREATE TABLE `permission` (
-  `id` int NOT NULL,
-  `tag` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `perm_desc` text COLLATE utf8mb4_general_ci NOT NULL
+  `id` int(11) NOT NULL,
+  `tag` varchar(10) NOT NULL,
+  `perm_desc` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -96,8 +96,8 @@ INSERT INTO `permission` (`id`, `tag`, `perm_desc`) VALUES
 --
 
 CREATE TABLE `roles` (
-  `id` int NOT NULL,
-  `role` text COLLATE utf8mb4_general_ci NOT NULL
+  `id` int(11) NOT NULL,
+  `role` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -115,9 +115,9 @@ INSERT INTO `roles` (`id`, `role`) VALUES
 --
 
 CREATE TABLE `role_permission` (
-  `id` int NOT NULL,
-  `role_id` int NOT NULL,
-  `perm_id` int NOT NULL
+  `id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `perm_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -143,15 +143,15 @@ INSERT INTO `role_permission` (`id`, `role_id`, `perm_id`) VALUES
 --
 
 CREATE TABLE `sales` (
-  `id` int NOT NULL,
-  `name` text COLLATE utf8mb4_general_ci NOT NULL,
-  `montor_id` int NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `payment` text COLLATE utf8mb4_general_ci NOT NULL,
-  `nomerhp` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `alamat` text COLLATE utf8mb4_general_ci NOT NULL,
-  `status` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `montor_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `payment` text NOT NULL,
+  `nomerhp` varchar(20) NOT NULL,
+  `alamat` text NOT NULL,
+  `status` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -168,16 +168,24 @@ INSERT INTO `sales` (`id`, `name`, `montor_id`, `user_id`, `payment`, `nomerhp`,
 --
 
 CREATE TABLE `services` (
-  `id` int NOT NULL,
-  `nama` varchar(255) NOT NULL,
-  `nomerhp` varchar(20) NOT NULL,
-  `montor` text NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `status` int NOT NULL,
-  `deskripsi` text,
-  `total` varchar(255) NOT NULL,
+  `id` int(11) NOT NULL,
+  `nama` varchar(255) DEFAULT NULL,
+  `nomerhp` varchar(20) DEFAULT NULL,
+  `montor` text DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `service_type` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `total` varchar(255) DEFAULT NULL,
   `codeq` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `services`
+--
+
+INSERT INTO `services` (`id`, `nama`, `nomerhp`, `montor`, `user_id`, `service_type`, `status`, `deskripsi`, `total`, `codeq`) VALUES
+(1, 'Ardiansyah', '081348150488', 'Montor', NULL, 1, 0, 'sadasdadasd', '200000', 'ADSS!!!@321231');
 
 -- --------------------------------------------------------
 
@@ -186,11 +194,11 @@ CREATE TABLE `services` (
 --
 
 CREATE TABLE `users` (
-  `id` int NOT NULL,
-  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `role_id` int NOT NULL
+  `id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -261,49 +269,49 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `montors`
 --
 ALTER TABLE `montors`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `permission`
 --
 ALTER TABLE `permission`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
