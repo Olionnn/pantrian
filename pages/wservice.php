@@ -1,5 +1,5 @@
 <?php 
-    $title = "Sales Page";
+    $title = "Services Page";
     $custom = "";
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
@@ -15,89 +15,18 @@
     }
 
 
-    if ($_SESSION['user']['role_id'] != 1) {
-        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Anda tidak memiliki akses'];
-        header('Location: ./index.php');
-        exit();
-    }
 
-    function getSales() {
+    function getServices() {
         global $db;
-        // name	montor_id	user_id	payment	nomerhp	alamat	status
-        $sql = "SELECT sales.*, montors.mtr_name as montor_name FROM sales JOIN montors ON sales.montor_id = montors.id";
-        // $sql = "SELECT sales.*, montors.mtr_name as montor_name FROM sales JOIN montors ON sales.montor_id = montors.id";
-        $result = mysqli_query($db, $sql);
-        $sales = [];
-        if (mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_assoc($result)) {
-                $sales[] = $row;
+        $sql = "SELECT * FROM services WHERE status = 1 AND service_type = 1 ORDER BY id DESC";
+        $result = $db->query($sql);
+        $services = [];
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $services[] = $row;
             }
         }
-        return $sales;
-    }
-
-
-    if(isset($_POST['addsales'])) {
-        $name = $_POST['name'];
-        $alamat = $_POST['alamat'];
-        $nomerhp = $_POST['nomerhp'];
-        $montor_id = $_POST['montor_id'];
-        $payment = $_POST['payment'];
-        $status = $_POST['status'];
-        $sql = "INSERT INTO sales (name, alamat, nomerhp, montor_id, payment, status) VALUES ('$name', '$alamat', '$nomerhp', '$montor_id', '$payment', '$status')";
-        if (mysqli_query($db, $sql)) {
-            $_SESSION['message'] = ['type' => 'success', 'text' => 'Sales berhasil ditambahkan'];
-            header('Location: ./sales.php');
-            exit();
-        } else {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Sales gagal ditambahkan'];
-            header('Location: ./sales.php');
-            exit();
-        }
-    }
-
-    if(isset($_POST['editsales'])) {
-        $id = $_POST['id'];
-        $name = $_POST['name'];
-        $alamat = $_POST['alamat'];
-        $nomerhp = $_POST['nomerhp'];
-        $montor_id = $_POST['montor_id'];
-        $payment = $_POST['payment'];
-        $status = $_POST['status'];
-        $sql = "UPDATE sales SET name='$name', alamat='$alamat', nomerhp='$nomerhp', montor_id='$montor_id', payment='$payment', status='$status' WHERE id='$id'";
-        if (mysqli_query($db, $sql)) {
-            $_SESSION['message'] = ['type' => 'success', 'text' => 'Sales berhasil diubah'];
-            header('Location: ./sales.php');
-            exit();
-        } else {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Sales gagal diubah'];
-            header('Location: ./sales.php');
-            exit();
-        }
-    }
-
-    if(isset($_POST['deletesales'])) {
-        $id = $_POST['id'];
-        $sql = "DELETE FROM sales WHERE id='$id'";
-        if (mysqli_query($db, $sql)) {
-            $_SESSION['message'] = ['type' => 'success', 'text' => 'Sales berhasil dihapus'];
-            header('Location: ./sales.php');
-            exit();
-        } else {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Sales gagal dihapus'];
-            header('Location: ./sales.php');
-            exit();
-        }
-    }
-
-    function getSalesById($id) {
-        global $db;
-        $sql = "SELECT * FROM sales WHERE id='$id'";
-        $result = mysqli_query($db, $sql);
-        if (mysqli_num_rows($result) > 0) {
-            return mysqli_fetch_assoc($result);
-        }
-        return null;
+        return $services;
     }
 
 ?>
@@ -126,86 +55,47 @@
                     ?>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
-                            <h6 class="m-0 my-auto font-weight-bold text-primary ">Sales Data Tables</h6>
+                            <h6 class="m-0 my-auto font-weight-bold text-primary ">Service Queue</h6>
                             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Sales
+                                Add Service
                             </button>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>NO</th>
-                                            <th>Nama</th>
-                                            <th>Alamat</th>
-                                            <th>Nomer HP</th>
-                                            <th>Nama Montor</th>
-                                            <th>Actions</th>
 
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>NO</th>
-                                            <th>Nama</th>
-                                            <th>Alamat</th>
-                                            <th>Nomer HP</th>
-                                            <th>Nama Montor</th>
-                                            <th>Actions</th>
-
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <?php 
-                                            $no = 1;
-                                            $sales = getSales();
-                                            foreach($sales as $sale) {
-
-                                                echo "<tr>";
-                                                echo "<td>{$no}</td>";
-                                                echo "<td>{$sale['name']}</td>";
-                                                echo "<td>{$sale['alamat']}</td>";
-                                                echo "<td>{$sale['nomerhp']}</td>";
-                                                echo "<td>{$sale['montor_name']}</td>";
-                                                echo "<td>
-                                                        <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
-                                                            data-id='{$sale['id']}' 
-                                                            data-name='{$sale['name']}'
-                                                            data-alamat='{$sale['alamat']}' 
-                                                            data-montor_id='{$sale['montor_id']}' 
-                                                            data-nomerhp='{$sale['nomerhp']}' 
-                                                            data-payment='{$sale['payment']}'
-                                                            data-status='{$sale['status']}'
-                                                            >
-                                                            Edit
-                                                        </button>
-                                                        <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
-                                                        data-id='{$sale['id']}' 
-                                                        data-name='{$sale['name']}'>
-                                                        Delete
-                                                        </button>
-                                                        <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#detailModal' 
-                                                        data-id='{$sale['id']}'
-                                                        data-name='{$sale['montor_name']}'
-                                                        data-alamat='{$sale['alamat']}'
-                                                        data-nomerhp='{$sale['nomerhp']}'
-                                                        data-montor_id='{$sale['montor_id']}'
-                                                        data-payment='{$sale['payment']}'
-                                                        data-status='{$sale['status']}'
-                                                        >
-                                                        Detail
-                                                        </button>
-                                                    </td>";
-                                                echo "</tr>";
-                                                $no++;
-                                            }
-                                        ?>
-
-                                    </tbody>
-                                </table>
-                            </div>
+                                <?php
+                                    $services = getServices();
+                                    if (count($services) == 0) {
+                                        echo "<h3 class='text-center'>No Services</h3>"; 
+                                    } else {
+                                        echo "<div class='row'>";
+                                        foreach ($services as $service) {
+                                            echo '
+                                            <div class="col-sm-3 mt-2">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title text-center">' . $service["codeq"] . '</h5>
+                                                        <div class="text-center">
+                                                            <button class="btn btn-primary" id="editService" 
+                                                            data-id="' . $service["id"] . '
+                                                            data-codeq="' . $service["codeq"] . '
+                                                            data-service_type="' . $service["service_type"] . '
+                                                            data-status="' . $service["status"] . '
+                                                            
+                                                            
+                                                            >Edit</button>
+                                                            <button class="btn btn-primary">Detail</button>
+                                                            <button class="btn btn-primary">Finish</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            ';
+                                        }
+                                        echo "</div>";
+                                    }
+                                ?>
+                                
                         </div>
                     </div>
 
@@ -225,215 +115,7 @@
         </a>
 
 
-        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Montors</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <form action="" method="post">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input class="form-control" type="text" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="alamat">Alamat</label>
-                                <input class="form-control" type="text" name="alamat" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="nomerhp">Nomer HP</label>
-                                <input class="form-control" type="text" name="nomerhp" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="montor_id">Montor</label>
-                                <select class="form-control" name="montor_id" required>
-                                    <option value="">Select Montor</option>
-                                    <?php 
-                                        $sql = "SELECT * FROM montors";
-                                        $result = mysqli_query($db, $sql);
-                                        if (mysqli_num_rows($result) > 0) {
-                                            while($row = mysqli_fetch_assoc($result)) {
-                                                echo "<option value='{$row['id']}'>{$row['mtr_name']}</option>";
-                                            }
-                                        }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="payment">Payment</label>
-                                <input class="form-control" type="text" name="payment" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select class="form-control" name="status" required>
-                                    <option value="0">Pending</option>
-                                    <option value="1">Success</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            <input class="btn btn-primary" type="submit" name="addsales" value="Add">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Edit Montors</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <form action="" method="post">
-                        <div class="modal-body">
-                            <input type="hidden" name="id" id="edit-id">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input class="form-control" type="text" name="name" id="edit-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="alamat">Alamat</label>
-                                <input class="form-control" type="text" name="alamat" id="edit-alamat" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="nomerhp">Nomer HP</label>
-                                <input class="form-control" type="text" name="nomerhp" id="edit-nomerhp" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="montor_id">Montor</label>
-                                <select class="form-control" name="montor_id" id="edit-montor_id" required>
-                                    <option value="">Select Montor</option>
-                                    <?php 
-                                        $sql = "SELECT * FROM montors";
-                                        $result = mysqli_query($db, $sql);
-                                        if (mysqli_num_rows($result) > 0) {
-                                            while($row = mysqli_fetch_assoc($result)) {
-                                                echo "<option value='{$row['id']}'>{$row['mtr_name']}</option>";
-                                            }
-                                        }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="payment">Payment</label>
-                                <input class="form-control" type="text" name="payment" id="edit-payment" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select class="form-control" name="status" id="edit-status" required>
-                                    <option value="0">Pending</option>
-                                    <option value="1">Success</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            <input class="btn btn-primary" type="submit" name="editsales" value="Save Changes">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
-
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Montors</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <form action="" method="post">
-                    <div class="modal-body">
-                        Are you sure you want to delete the Montor: <span id="delete-montor-name"></span>?
-                        <input type="hidden" name="id" id="delete-montor-id">
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <input class="btn btn-danger" type="submit" name="deletesales" value="Delete">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Detail  Sales</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <form action="" method="post">
-                        <div class="modal-body">
-                            <input type="hidden" name="id" id="edit-id">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input class="form-control" type="text" name="name" id="edit-name" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="alamat">Alamat</label>
-                                <input class="form-control" type="text" name="alamat" id="edit-alamat" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="nomerhp">Nomer HP</label>
-                                <input class="form-control" type="text" name="nomerhp" id="edit-nomerhp" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="montor_id">Montor</label>
-                                <select class="form-control" name="montor_id" id="edit-montor_id" disabled>
-                                    <option value="">Select Montor</option>
-                                    <?php 
-                                        $sql = "SELECT * FROM montors";
-                                        $result = mysqli_query($db, $sql);
-                                        if (mysqli_num_rows($result) > 0) {
-                                            while($row = mysqli_fetch_assoc($result)) {
-                                                echo "<option value='{$row['id']}'>{$row['mtr_name']}</option>";
-                                            }
-                                        }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="payment">Payment</label>
-                                <input class="form-control" type="text" name="payment" id="edit-payment" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select class="form-control" name="status" id="edit-status" disabled>
-                                    <option value="0">Pending</option>
-                                    <option value="1">Success</option>
-                                </select>
-                            </div>
-
-                            
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+        
 
 
     
@@ -441,54 +123,7 @@
     <?php
         require_once("../layout/logoutModal.php"); 
         $customsc = "
-        <script>
-            $('#editModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget)
-                var id = button.data('id')
-                var name = button.data('name')
-                var alamat = button.data('alamat')
-                var nomerhp = button.data('nomerhp')
-                var montor_id = button.data('montor_id')
-                var payment = button.data('payment')
-                var status = button.data('status')
-                var modal = $(this)
-                modal.find('.modal-body #edit-id').val(id)
-                modal.find('.modal-body #edit-name').val(name)
-                modal.find('.modal-body #edit-alamat').val(alamat)
-                modal.find('.modal-body #edit-nomerhp').val(nomerhp)
-                modal.find('.modal-body #edit-montor_id').val(montor_id)
-                modal.find('.modal-body #edit-payment').val(payment)
-                modal.find('.modal-body #edit-status').val(status)
-            })
-
-            $('#deleteModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget)
-                var id = button.data('id')
-                var name = button.data('name')
-                var modal = $(this)
-                modal.find('.modal-body #delete-montor-id').val(id)
-                modal.find('.modal-body #delete-montor-name').text(name)
-            })
-            
-            $('#detailModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget)
-                var id = button.data('id')
-                var name = button.data('name')
-                var alamat = button.data('alamat')
-                var nomerhp = button.data('nomerhp')
-                var montor_id = button.data('montor_id')
-                var payment = button.data('payment')
-                var status = button.data('status')
-                var modal = $(this)
-                modal.find('.modal-body #edit-id').val(id)
-                modal.find('.modal-body #edit-name').val(name)
-                modal.find('.modal-body #edit-alamat').val(alamat)
-                modal.find('.modal-body #edit-nomerhp').val(nomerhp)
-                modal.find('.modal-body #edit-montor_id').val(montor_id)
-                modal.find('.modal-body #edit-payment').val(payment)
-                modal.find('.modal-body #edit-status').val(status)
-            })
-        </script>
+        
         ";
 
 
