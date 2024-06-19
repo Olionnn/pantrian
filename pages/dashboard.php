@@ -17,7 +17,7 @@
         exit();
     }
 
-    checkAccessPage($db, 9, "./noacc.php");
+    checkAccessPage($db, 9, "./wservice.php");
     
     function getServices() {
         global $db;

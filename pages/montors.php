@@ -6,8 +6,11 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
-    
+    require_once("./access.php");
 
+
+    
+    checkAccessPage($db, 18, "./noacc.php");
 
     if (!isset($_SESSION['user'])) {
         $_SESSION['message'] = ['type' => 'danger', 'text' => 'Anda harus login terlebih dahulu'];
@@ -119,6 +122,45 @@
         exit();
     }
 
+
+
+    function btnAddPermission() {
+        global $db;
+        if (checkAccessPage($db, 19, '')) {
+            return "<button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#addModal'>
+                <i class='fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400'></i>
+                Add Montors
+            </button>";
+        }
+    }
+
+
+    function btnEditPermission($montor) {
+        global $db;
+        if (checkAccessPage($db, 20, '')) {
+            return "<button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
+                data-id='{$montor['id']}' 
+                data-img='{$montor['img']}' 
+                data-brandid='{$montor['brand_id']}' 
+                data-brand='{$montor['mtr_name']}' 
+                data-harga='{$montor['harga']}'
+                data-deskripsi='{$montor['mtr_desc']}'>
+                Edit
+            </button>";
+        }
+    }
+
+    function btnDeletePermission($montor) {
+        global $db;
+        if (checkAccessPage($db, 21, '')) {
+            return "<button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
+                data-id='{$montor['id']}' 
+                data-montor='{$montor['mtr_name']}'>
+            Delete
+            </button>";
+        }
+    }
+
 ?>
 
     <div id="wrapper">
@@ -146,10 +188,7 @@
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="m-0 my-auto font-weight-bold text-primary ">Brands Data Tables</h6>
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Montors
-                            </button>
+                                <?= btnAddPermission(); ?>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -188,20 +227,8 @@
                                                     <td><img src='../assets/images/montor/{$montor['img']}' alt='{$montor['mtr_name']}' width='100'></td>
                                                     <td>{$montor['harga']}</td>
                                                     <td>
-                                                        <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal' 
-                                                            data-id='{$montor['id']}' 
-                                                            data-img='{$montor['img']}' 
-                                                            data-brandid='{$montor['brand_id']}' 
-                                                            data-brand='{$montor['mtr_name']}' 
-                                                            data-harga='{$montor['harga']}'
-                                                            data-deskripsi='{$montor['mtr_desc']}'>
-                                                            Edit
-                                                        </button>
-                                                        <button class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteModal' 
-                                                            data-id='{$montor['id']}' 
-                                                            data-montor='{$montor['mtr_name']}'>
-                                                        Delete
-                                                        </button>
+                                                        ".btnEditPermission($montor)."
+                                                        ".btnDeletePermission($montor)."
                                                     </td>
                                                 </tr>";
                                                 $no++;

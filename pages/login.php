@@ -43,7 +43,7 @@
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <div class="row">
-                            <img class="col-lg-6 d-none d-lg-block bg-login-image" src="https://placehold.co/420/1F2544/FFD0EC?text=MC+SERVER&font=roboto" alt="">
+                            <img class="col-lg-6 d-none d-lg-block bg-login-image" src="https://placehold.co/420/1F2544/FFD0EC?text=PANTRIAN&font=roboto" alt="">
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
@@ -82,16 +82,12 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
     <?php
      $customsc = "";
      require("../layout/footer.php");
-
-
      ?>
+
+

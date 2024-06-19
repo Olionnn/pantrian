@@ -1,3 +1,7 @@
+<?php
+require_once("../db.php");
+require_once("../pages/access.php");
+?>
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -9,11 +13,13 @@
 
     <hr class="sidebar-divider my-0">
 
+    <?php if (checkAccessPage($db, 9, '')) : ?>
     <li class="nav-item active">
         <a class="nav-link" href="../pages/dashboard.php">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
+    <?php endif; ?>
 
     <hr class="sidebar-divider">
 
@@ -22,6 +28,7 @@
     </div>
 
 
+    <?php if (checkAccessPage($db, 14, '')) : ?>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
@@ -38,7 +45,9 @@
             </div>
         </div>
     </li>
+    <?php endif; ?>
 
+    <?php if (checkAccessPage($db, 22, '')) : ?>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
             aria-expanded="true" aria-controls="collapseUtilities">
@@ -54,6 +63,7 @@
             </div>
         </div>
     </li>
+    <?php endif; ?>
 
     <hr class="sidebar-divider">
 
@@ -97,21 +107,30 @@
 
     <hr class="sidebar-divider"> -->
 
+
+    <?php if (checkAccessPage($db, 3, '') || checkAccessPage($db, 7, '')) : ?>
     <div class="sidebar-heading">
         Administator
     </div>
+    <?php endif; ?>
 
+    <?php if (checkAccessPage($db, 3, '')) : ?>
     <li class="nav-item">
         <a class="nav-link" href="../pages/users.php">
             <i class="fas fa-fw fa-table"></i>
             <span>Users Management</span></a>
     </li>
+    <?php endif; ?>
 
+
+    <?php if (checkAccessPage($db, 7, '')) : ?>
     <li class="nav-item">
         <a class="nav-link" href="../pages/roles.php">
             <i class="fas fa-fw fa-table"></i>
             <span>Roles Management</span></a>
     </li>
+    <?php endif; ?>
+
 
 
     <hr class="sidebar-divider d-none d-md-block">

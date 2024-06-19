@@ -6,6 +6,9 @@
     session_start(); 
     require_once("../layout/header.php");
     require_once("../db.php");
+    require_once("./access.php");
+
+    checkAccessPage($db, 23, "./noacc.php");
 
 
     if (!isset($_SESSION['user'])) {
@@ -107,6 +110,66 @@
 
 
 
+    function btnAddPermision() {
+        global $db;
+        if (checkAccessPage($db , 23 , '')) {
+            return '
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Add Service
+                </button>
+            ';
+        } else {
+            return "";
+        }
+    }
+
+
+    function btnEditPermision($service) {
+        global $db;
+        if (checkAccessPage($db , 25 , '')) {
+            return '
+            <button class="btn btn-primary" data-toggle="modal" data-target="#editModal" 
+            data-id="' . $service["id"] . '"
+            data-codeq="' . $service["codeq"] . '"
+            data-service_type="' . $service["service_type"] . '"
+            data-status="' . $service["status"] . '"
+            data-nama="' . $service["nama"] . '"
+            data-nomerhp="' . $service["nomerhp"] . '"
+            data-montor="' . $service["montor"] . '"
+            data-deskripsi="' . $service["deskripsi"] . '"
+            data-total="' . $service["total"] . '"
+            >Edit</button>
+            ';
+        }
+    }
+
+    function btnSelesaiPermision($service) {
+        global $db;
+        if (checkAccessPage($db , 24 , '')) {
+            return '
+            <button class="dropdown-item" data-toggle="modal" data-target="#selesaiModal"
+            data-id="' . $service["id"] . '"
+            data-codeq="' . $service["codeq"] . '"
+            >Selesai</button>
+            ';
+        }
+    }
+
+    function btnBatalPermision($service) {
+        global $db;
+        if (checkAccessPage($db , 26 , '')) {
+            return '
+            <button class="dropdown-item" data-toggle="modal" data-target="#batalModal"
+                data-id="' . $service["id"] . '"
+                data-codeq="' . $service["codeq"] . '"
+            >Batal</button>
+            ';
+        }
+    }
+
+
+
 ?>
 
     <div id="wrapper">
@@ -134,10 +197,7 @@
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="m-0 my-auto font-weight-bold text-primary ">Service Queue</h6>
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Add Service
-                            </button>
+                            <?= btnAddPermision() ?>
                         </div>
                         <div class="card-body">
 
@@ -154,17 +214,7 @@
                                                     <div class="card-body">
                                                         <h5 class="card-title text-center">' . $service["codeq"] . '</h5>
                                                         <div class="text-center">
-                                                            <button class="btn btn-primary" data-toggle="modal" data-target="#editModal" 
-                                                            data-id="' . $service["id"] . '"
-                                                            data-codeq="' . $service["codeq"] . '"
-                                                            data-service_type="' . $service["service_type"] . '"
-                                                            data-status="' . $service["status"] . '"
-                                                            data-nama="' . $service["nama"] . '"
-                                                            data-nomerhp="' . $service["nomerhp"] . '"
-                                                            data-montor="' . $service["montor"] . '"
-                                                            data-deskripsi="' . $service["deskripsi"] . '"
-                                                            data-total="' . $service["total"] . '"
-                                                            >Edit</button>
+                                                            '. btnEditPermision($service) .'
                                                             <button class="btn btn-primary" data-toggle="modal" data-target="#detailModal"
                                                             data-id="' . $service["id"] . '"
                                                             data-codeq="' . $service["codeq"] . '"
@@ -177,19 +227,14 @@
                                                             data-total="' . $service["total"] . '"
                                                             >Detail</button>
                                                             <div class="btn-group">
-                                                            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                                                Action
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <button class="dropdown-item" data-toggle="modal" data-target="#selesaiModal"
-                                                                data-id="' . $service["id"] . '"
-                                                                data-codeq="' . $service["codeq"] . '"
-                                                                >Selesai</button>
-                                                                <button class="dropdown-item" data-toggle="modal" data-target="#batalModal"
-                                                                data-id="' . $service["id"] . '"
-                                                                data-codeq="' . $service["codeq"] . '"
-                                                                >Batal</button>
-                                                            </div>
+                                                                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                                    Action
+                                                                </button>
+                                                                <div class="dropdown-menu">
+                                                                
+                                                                    '. btnSelesaiPermision($service) .'
+                                                                    '. btnBatalPermision($service) .'
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
