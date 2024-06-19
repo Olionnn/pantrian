@@ -49,7 +49,7 @@
             exit();
         }
     
-        $target_file = $target_dir ."/". basename($img);
+         $target_file = $target_dir ."/". basename($img);
         if (move_uploaded_file($img_tmp, $target_file)) {
             $query = "INSERT INTO montors (mtr_name, brand_id, img, harga, deskripsi) VALUES ('$mtr_name', '$brand_id', '$img', '$harga', '$deskripsi')";
             $result = mysqli_query($db, $query);
