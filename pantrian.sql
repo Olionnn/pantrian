@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 19, 2024 at 05:01 AM
+-- Generation Time: Jun 19, 2024 at 10:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,8 +38,16 @@ CREATE TABLE `brands` (
 --
 
 INSERT INTO `brands` (`id`, `brand_name`, `deskripsi`) VALUES
-(1, 'Yamaha', ''),
-(2, 'Honda', 'YAKIN');
+(1, 'Yamaha', 'Yamaha Motor Company adalah perusahaan Jepang yang terkenal dengan produk sepeda motor dan kendaraan lainnya.'),
+(2, 'Honda', 'Honda Motor Co., Ltd. adalah produsen sepeda motor terbesar di dunia dan dikenal dengan inovasi serta kualitas produknya.'),
+(3, 'Suzuki', 'Suzuki Motor Corporation adalah perusahaan multinasional Jepang yang memproduksi sepeda motor, mobil, dan berbagai mesin lainnya.'),
+(4, 'Kawasaki', 'Kawasaki Heavy Industries, Ltd. adalah produsen sepeda motor dan peralatan industri yang berbasis di Jepang.'),
+(5, 'Ducati', 'Ducati Motor Holding S.p.A. adalah produsen sepeda motor Italia yang terkenal dengan desain dan performa tinggi.'),
+(6, 'Harley-Davidson', 'Harley-Davidson, Inc. adalah produsen sepeda motor asal Amerika Serikat yang terkenal dengan motornya yang khas dan bertenaga besar.'),
+(7, 'BMW', 'BMW Motorrad adalah divisi sepeda motor dari BMW AG, perusahaan Jerman yang terkenal dengan sepeda motor premium dan teknologi canggih.'),
+(8, 'KTM', 'KTM AG adalah produsen sepeda motor asal Austria yang dikenal dengan sepeda motor sport dan off-road.'),
+(9, 'Aprilia', 'Aprilia adalah produsen sepeda motor Italia yang terkenal dengan sepeda motor sport dan balap.'),
+(10, 'Royal Enfield', 'Royal Enfield adalah produsen sepeda motor asal India yang terkenal dengan sepeda motor klasik dan ikonik.');
 
 -- --------------------------------------------------------
 
@@ -61,7 +69,16 @@ CREATE TABLE `montors` (
 --
 
 INSERT INTO `montors` (`id`, `mtr_name`, `brand_id`, `img`, `harga`, `deskripsi`) VALUES
-(9, 'PCX', 1, 'Screenshot 2023-09-17 184128.png', '100000', 't');
+(1, 'Yamaha Vixion', 1, 'https://example.com/images/yamaha_vixion.jpg', '25000000', ''),
+(2, 'Honda Beat', 2, 'https://example.com/images/honda_beat.jpg', '16000000', ''),
+(3, 'Suzuki Satria', 3, 'https://example.com/images/suzuki_satria.jpg', '23000000', ''),
+(4, 'Kawasaki Ninja', 4, 'https://example.com/images/kawasaki_ninja.jpg', '40000000', ''),
+(5, 'Yamaha NMax', 1, 'https://example.com/images/yamaha_nmax.jpg', '28000000', ''),
+(6, 'Honda CBR', 2, 'https://example.com/images/honda_cbr.jpg', '36000000', ''),
+(7, 'Suzuki GSX-R150', 3, 'https://example.com/images/suzuki_gsx-r150.jpg', '29000000', ''),
+(8, 'Kawasaki Z250', 4, 'https://example.com/images/kawasaki_z250.jpg', '48000000', ''),
+(9, 'Yamaha Aerox', 1, 'https://example.com/images/yamaha_aerox.jpg', '27000000', ''),
+(10, 'Honda Scoopy', 2, 'https://example.com/images/honda_scoopy.jpg', '19000000', '');
 
 -- --------------------------------------------------------
 
@@ -124,8 +141,7 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `role`) VALUES
-(1, 'Administrator'),
-(4, 'HRD');
+(1, 'Administrator');
 
 -- --------------------------------------------------------
 
@@ -170,14 +186,7 @@ INSERT INTO `role_permission` (`id`, `role_id`, `perm_id`) VALUES
 (130, 1, 24),
 (131, 1, 25),
 (132, 1, 26),
-(133, 1, 27),
-(140, 4, 1),
-(141, 4, 2),
-(142, 4, 3),
-(143, 4, 4),
-(144, 4, 5),
-(145, 4, 6),
-(146, 4, 8);
+(133, 1, 27);
 
 -- --------------------------------------------------------
 
@@ -202,7 +211,16 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `name`, `montor_id`, `user_id`, `payment`, `nomerhp`, `alamat`, `status`, `created_at`) VALUES
-(4, 'nayarf', 9, NULL, 'ONLINE', '081348150488', 'kademangan', 1, '2024-06-19 00:40:48');
+(1, 'Andi', 5, NULL, 'ONLINE', '081234567891', 'Jl. Merdeka No.1', 1, '2024-06-19 15:27:41'),
+(2, 'Budi', 2, NULL, 'ONLINE', '082234567892', 'Jl. Sudirman No.2', 1, '2024-06-19 15:27:41'),
+(3, 'Citra', 8, NULL, 'ONLINE', '083234567893', 'Jl. Gatot Subroto No.3', 1, '2024-06-19 15:27:41'),
+(4, 'Dewi', 4, NULL, 'ONLINE', '084234567894', 'Jl. Ahmad Yani No.4', 1, '2024-06-19 15:27:41'),
+(5, 'Eka', 1, NULL, 'ONLINE', '085234567895', 'Jl. Diponegoro No.5', 1, '2024-06-19 15:27:41'),
+(6, 'Fajar', 10, NULL, 'ONLINE', '086234567896', 'Jl. Gajah Mada No.6', 1, '2024-06-19 15:27:41'),
+(7, 'Gilang', 7, NULL, 'ONLINE', '087234567897', 'Jl. Pattimura No.7', 1, '2024-06-19 15:27:41'),
+(8, 'Hendra', 3, NULL, 'ONLINE', '088234567898', 'Jl. Thamrin No.8', 1, '2024-06-19 15:27:41'),
+(9, 'Ika', 6, NULL, 'ONLINE', '089234567899', 'Jl. MH. Thamrin No.9', 1, '2024-06-19 15:27:41'),
+(10, 'Joko', 9, NULL, 'ONLINE', '080234567890', 'Jl. Sisingamangaraja No.10', 1, '2024-06-19 15:27:41');
 
 -- --------------------------------------------------------
 
@@ -229,14 +247,18 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `nama`, `nomerhp`, `montor`, `user_id`, `service_type`, `status`, `deskripsi`, `total`, `codeq`, `created_at`) VALUES
-(1, 'Ardiansyah', '081348150488', 'Montor', NULL, 1, 2, 'sadasdadasd', '200000', 'ADSS!!!@321231', '2024-06-19 00:44:33'),
-(2, 'Google', '081348150488', 'Montor', NULL, 1, 1, 'gjrfhg', '656', 'ADSS!!!@32123112', '2024-06-19 00:44:33'),
-(3, NULL, NULL, NULL, 1, 2, 1, NULL, NULL, 'Q20240618163541', '2024-06-19 08:43:03'),
-(4, NULL, NULL, NULL, NULL, 2, 0, NULL, NULL, 'Q163609', '2024-06-19 00:44:33'),
-(5, NULL, NULL, NULL, 1, 2, 1, NULL, NULL, 'Q163615', '2024-06-19 00:44:33'),
-(6, NULL, NULL, NULL, NULL, 2, 0, NULL, NULL, 'Q171256', '2024-06-19 00:44:33'),
-(7, NULL, NULL, NULL, 1, 2, 1, NULL, NULL, 'Q171258', '2024-06-19 00:44:33'),
-(8, 'Google', '081348150488', 'Montor', NULL, 1, 1, 'weqeqwe', '656123123', 'ADSSe', '2024-06-19 00:52:23');
+(1, 'Andi', '081234567891', 'Yamaha Vixion', 1, 1, 1, 'Service lengkap dan ganti oli', '300000', 'CODE1234', '2024-06-19 15:35:51'),
+(2, 'Budi', '082234567892', 'Honda Beat', 2, 1, 1, 'Ganti ban belakang dan cek tekanan angin', '150000', 'CODE2345', '2024-06-19 15:35:51'),
+(3, 'Citra', '083234567893', 'Suzuki Satria', 3, 1, 1, 'Pemeriksaan mesin dan tune-up', '250000', 'CODE3456', '2024-06-19 15:35:51'),
+(4, 'Dewi', '084234567894', 'Kawasaki Ninja', 4, 1, 1, 'Ganti oli mesin dan filter', '100000', 'CODE4567', '2024-06-19 15:35:51'),
+(5, 'Eka', '085234567895', 'Yamaha NMax', 5, 1, 1, 'Ganti ban depan dan balancing', '200000', 'CODE5678', '2024-06-19 15:35:51'),
+(6, 'Fajar', '086234567896', 'Honda CBR', 6, 1, 1, 'Service berkala dan pemeriksaan rem', '350000', 'CODE6789', '2024-06-19 15:35:51'),
+(7, 'Gilang', '087234567897', 'Suzuki GSX-R150', 7, 1, 1, 'Ganti oli mesin dan pemeriksaan umum', '120000', 'CODE7890', '2024-06-19 15:35:51'),
+(8, 'Hendra', '088234567898', 'Kawasaki Z250', 8, 1, 1, 'Service lengkap dan ganti busi', '400000', 'CODE8901', '2024-06-19 15:35:51'),
+(9, 'Ika', '089234567899', 'Yamaha Aerox', 9, 1, 1, 'Ganti ban dan balancing', '180000', 'CODE9012', '2024-06-19 15:35:51'),
+(10, 'Joko', '080234567890', 'Honda Scoopy', 10, 1, 1, 'Ganti oli dan pemeriksaan rem', '110000', 'CODE0123', '2024-06-19 15:35:51'),
+(11, NULL, NULL, NULL, 1, 2, 555, NULL, NULL, 'Q103835', '2024-06-19 15:38:36'),
+(12, NULL, NULL, NULL, NULL, 2, 0, NULL, NULL, 'Q103835', '2024-06-19 15:38:35');
 
 -- --------------------------------------------------------
 
@@ -257,8 +279,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role_id`) VALUES
-(1, 'admin', 'admin2@admin.com', '$2y$10$wtKneu7gdRu.AeIGLeiJpeqRG7t10czzpw/vrlhvaXN6n2skiMUBe', 1),
-(4, 'Olionnn', 'admin2@admin.com', '$2y$10$f8zMTT/Nx7SQFvCyyVzpvuu8D2VGhHSjTpfYutsjTo8AUgMWcYR26', 4);
+(1, 'admin', 'admin2@admin.com', '$2y$10$wtKneu7gdRu.AeIGLeiJpeqRG7t10czzpw/vrlhvaXN6n2skiMUBe', 1);
 
 --
 -- Indexes for dumped tables
@@ -320,13 +341,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `montors`
 --
 ALTER TABLE `montors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `permission`
@@ -350,13 +371,13 @@ ALTER TABLE `role_permission`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `users`
