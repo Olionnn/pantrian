@@ -67,7 +67,7 @@ require_once("../pages/access.php");
 
     <hr class="sidebar-divider">
 
-    <!-- <div class="sidebar-heading">
+    <div class="sidebar-heading">
         Report
     </div>
 
@@ -80,10 +80,7 @@ require_once("../pages/access.php");
         <div id="collapseSales" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Menu Report Sales:</h6>
-                <a class="collapse-item" href="login.html">Done Sales</a>
-                <a class="collapse-item" href="register.html">Report Monthly Sale</a>
-                <a class="collapse-item" href="#">Coming...</a>
-                <a class="collapse-item" href="#">Coming...</a>
+                <a class="collapse-item" href="rsales.php">Done Sales</a>
             </div>
         </div>
     </li>
@@ -97,15 +94,12 @@ require_once("../pages/access.php");
         <div id="collapseService" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Menu Report Service:</h6>
-                <a class="collapse-item" href="login.html">Done Service</a>
-                <a class="collapse-item" href="register.html">Report Monthly Service</a>
-                <a class="collapse-item" href="#">Coming...</a>
-                <a class="collapse-item" href="#">Coming...</a>
+                <a class="collapse-item" href="rservice.php">Done Service</a>
             </div>
         </div>
     </li>
 
-    <hr class="sidebar-divider"> -->
+    <hr class="sidebar-divider">
 
 
     <?php if (checkAccessPage($db, 3, '') || checkAccessPage($db, 7, '')) : ?>
